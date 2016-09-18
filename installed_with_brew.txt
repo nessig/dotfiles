@@ -1,0 +1,150 @@
+ant 1.9.7
+antiword 0.37
+arpack-julia 3.3.0_2
+autoconf 2.69
+automake 1.15
+bash-completion 1.3_1
+bdw-gc 7.4.2 7.6.0
+boost 1.60.0_2 1.61.0_1
+cabal-install 1.24.0.0_1
+cairo 1.14.6_1
+chromedriver 2.21 2.24
+clang-format 2016-03-29 2016-08-03
+clisp 2.49
+cloog018 0.18.0
+cloog018-julia 0.18.1
+cmake 3.5.2 3.6.2
+cscope 15.8b
+ctags 5.8_1
+curl 7.49.0 7.50.3
+dirmngr 1.1.1_1 1.1.1_2
+doxygen 1.8.12
+emacs HEAD
+emacs-plus 24.5
+erlang 19.0.2
+fftw 3.3.4_1 3.3.5
+fontconfig 2.11.1_2 2.12.1 2.12.1_2
+freetype 2.6.3 2.6.5 2.7
+gcc 6.1.0 6.2.0
+gcc48 4.8.5
+gdb 7.11.1
+gdbm 1.11 1.12
+gdk-pixbuf 2.34.0
+gettext 0.19.7 0.19.8.1
+ghc 8.0.1
+giflib 4.2.3
+git 2.10.0 2.8.3
+glib 2.46.2 2.48.1 2.48.2
+global 6.5.4
+gmp 6.1.0 6.1.1
+gmp4 4.3.2
+gmp4-julia 4.3.2
+gnupg 1.4.20 1.4.21
+gnupg2 2.0.30 2.0.30_2
+gnutls 3.4.11 3.4.14 3.4.15
+gobject-introspection 1.48.0
+gperftools 2.5
+gpg-agent 2.0.30 2.0.30_1
+graphicsmagick 1.3.23_1 1.3.25
+graphviz 2.38.0
+harfbuzz 1.3.0
+htop 2.0.2
+httpie 0.9.3 0.9.6
+hunspell 1.3.3 1.4.1
+icu4c 57.1
+imagemagick 6.9.4-3 6.9.5-9 6.9.5-9_2
+isl 0.15 0.17.1
+isl011 0.11.1
+isl011-julia 0.11.2
+jpeg 8d
+julia 0.4.5_1 0.4.6_1
+leiningen 2.6.1 2.7.0
+libassuan 2.4.2 2.4.3_1
+libcroco 0.6.11
+libevent 2.0.22
+libexif 0.6.21
+libffi 3.0.13
+libgcrypt 1.7.0_1 1.7.3
+libgit2 0.23.4 0.24.1
+libgpg-error 1.22 1.24
+libgsf 1.14.40
+libksba 1.3.4 1.3.5
+libmpc 1.0.3
+libmpc08 0.8.1
+libpng 1.6.21 1.6.24 1.6.25
+librsvg 2.40.16_1
+libsigsegv 2.10
+libssh2 1.7.0
+libtasn1 4.8 4.9
+libtiff 4.0.6_1 4.0.6_2
+libtool 2.4.6 2.4.6_1
+libusb 1.0.20
+libusb-compat 0.1.5
+libyaml 0.1.6_1
+lighttpd 1.4.39
+little-cms2 2.8
+llvm 3.8.1
+llvm33-julia 3.3_1
+llvm37-julia 3.7.1_3
+macvim 7.4-108 8.0-110
+markdown 1.0.1
+maven 3.3.9
+mercurial 3.8.2 3.9.1
+mlton 20130715
+mpfr 3.1.4
+mpfr2 2.4.2
+nettle 3.2
+nginx 1.10.0 1.10.1
+ninja 1.7.1
+nmap 7.12
+open-mpi 1.10.2_1 2.0.1
+openblas-julia 0.2.18
+openjpeg 2.1.1
+openssl 1.0.2h_1
+orc 0.4.26
+pandoc 1.17.0.3 1.17.2
+pango 1.40.2 1.40.3
+pcre 8.38 8.39
+pcre2 10.21 10.22
+perl 5.24.0_1
+pinentry 0.9.7
+pixman 0.34.0
+pkg-config 0.29.1 0.29.1_1
+poppler 0.47.0
+postgresql 9.5.3 9.5.4
+protobuf 2.6.1 3.0.2
+pth 2.0.7
+py2cairo 1.10.0_1
+pyenv 1.0.1
+pyenv-virtualenv 1.0.0 20160716
+pygobject3 3.20.1_1
+pypy 5.1.1_1 5.4.1
+python 2.7.12
+python3 3.5.2_1
+qt 4.8.7_2
+qt5 5.6.1-1
+rabbitmq 3.6.1 3.6.4
+rbenv 1.0.0
+readline 6.3.8
+redis 3.2.0 3.2.3
+ruby 2.3.1
+ruby-build 20160426 20160913
+sbt 0.13.11 0.13.12
+sqlite 3.13.0 3.14.1 3.14.2
+suite-sparse-julia 4.4.6_1
+tree 1.7.0
+unixodbc 2.3.4
+urweb 20151122
+uwsgi 2.0.11.2_1 2.0.11.2_2
+valgrind 3.11.0 3.11.0_1
+vim 8.0.0002
+vips 8.3.3
+w3m 0.5.3
+wget 1.17.1 1.18
+wxmac 3.0.2_2 3.0.2_3
+xz 5.2.2
+yajl 2.1.0
+youtube-dl 2016.05.21.2 2016.09.15
+zeromq 4.1.4 4.1.5
+zsh 5.2
+zsh-completions 0.20.0
