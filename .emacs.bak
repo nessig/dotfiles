@@ -1,0 +1,362 @@
+;;; Update package-archive lists
+(require 'package)
+(setq package-enable-at-startup nil)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+;; (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
+(package-initialize)
+
+;; Install 'use-package' if necessary
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+;; Enable use-package
+(eval-when-compile
+  (require 'use-package))
+(require 'diminish)                ;; if you use :diminish
+(require 'bind-key)                ;; if you use any :bind variant
+
+;;; init-use-package.el ends here
+
+(use-package zenburn-theme
+ :ensure t)
+
+(setenv "LC_CTYPE" "UTF-8")
+
+(with-eval-after-load "esh-opt"
+  (autoload 'epe-theme-lambda "eshell-prompt-extras")
+  (setq eshell-highlight-prompt nil
+        eshell-prompt-function 'epe-theme-lambda))
+
+(setq backup-directory-alist `(("." . "~/.saves")))
+
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+(eval-after-load 'flycheck
+  '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+
+;; (use-package auto-complete-clang
+;;   :ensure t)
+
+(use-package yasnippet
+  :config
+  (yas-reload-all)
+  (yas-global-mode 1))
+
+
+(use-package company
+  :init
+  (add-hook 'after-init-hook 'global-company-mode)
+  :config
+  ;; Align annotations to the right hand side
+  (setq company-tooltip-align-annotations t)
+  :diminish company-mode
+  :bind ("M-SPC" . company-complete))
+
+(use-package company-jedi
+  :config
+  (add-to-list 'company-backends 'company-jedi)
+  (progn
+    (define-key company-mode-map (kbd "C-.") 'helm-company)
+    (define-key company-active-map (kbd "C-.") 'helm-company)))
+
+;; (use-package helm-company :ensure t)
+;; (use-package company
+;;   :ensure t
+;;   :diminish company-mode
+;;   :init (global-company-mode 1)
+;;   :config
+;;   (progn
+;;     ;; (dolist (package '(company-go
+;;     ;;                    company-inf-ruby
+;;     ;;                    company-tern
+;;     ;;                    company-math
+;;     ;;                    company-restclient))
+;;     ;;   (use-package package
+;;     ;;     :ensure t
+;;     ;;     :demand t
+;;     ;;     :init (add-to-list 'company-backends package)))
+
+;;     ;; Use Helm to complete suggestions
+;;     (bind-keys :map company-active-map
+;;                ;; ("C-c d" . company-show-doc-buffer)
+;;                ("C-j" . helm-company))
+;;     (bind-keys :map company-mode-map
+;;                ("C-j" . helm-company))
+;;     (setq company-echo-delay 0
+;;           company-tooltip-minimum-width 30
+;;           company-idle-delay nil)))
+
+;; (use-package helm-company
+;;   :ensure t)
+
+;; (use-package company
+;;   :ensure t
+;;   :defer t
+;;   :init (global-company-mode)
+;;   :config
+;;   (progn
+;;     (bind-keys :map company-active-map
+;;                ("C-c C-d" . company-show-doc-buffer)
+;;                ("C-j" . helm-company))
+;;     (bind-keys :map company-mode-map
+;;                ("C-j" . helm-company))
+;;     ))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;  Defaults
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Show matching parens
+(setq show-paren-delay 0)
+(show-paren-mode 1)
+
+;; Auto-close brackets and double quotes
+(electric-pair-mode 1)
+
+;; Always display line and column numbers
+(setq line-number-mode t)
+
+;; from 'better-defaults.el'
+;; Allow clipboard from outside emacs
+(setq x-select-enable-clipboard t
+      x-select-enable-primary t
+      save-interprogram-paste-before-kill t
+      apropos-do-all t
+      mouse-yank-at-point t)
+
+;; From better defaults
+;; (bind-keys*
+;;  ("C-s" . isearch-forward-regexp)
+;;  ("C-r" . isearch-backward-regexp)
+;;  ("C-M-s" . isearch-forward)
+;;  ("C-M-r" . isearch-backward))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;  Major Modes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;   C Family
+
+
+(defun my-irony-mode-hook ()
+  (define-key irony-mode-map [remap completion-at-point]
+    'irony-completion-at-point-async)
+  (define-key irony-mode-map [remap complete-symbol]
+    'irony-completion-at-point-async))
+
+(use-package irony
+  :ensure t
+  :config
+  (progn
+    (use-package company-irony
+      :ensure t
+      :config
+      (add-to-list 'company-backends '(company-irony-c-headers company-irony)))
+    (add-hook 'irony-mode-hook 'electric-pair-mode)
+    (add-hook 'c++-mode-hook 'irony-mode)
+    (add-hook 'c-mode-hook 'irony-mode)
+    (add-hook 'irony-mode-hook 'my-irony-mode-hook)
+    (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
+    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+    (setq irony-additional-clang-options '("-std=c++14" "-stdlib=libc++"))
+    (setq-default c-basic-offset 4))
+  :bind (("C-c r" . clang-format-region)
+	 ("C-c b" . clang-format-buffer)))
+
+
+
+;;;;;;;;;;;;;   Python
+
+(defun my-python-mode-hook ()
+  (setq python-shell-completion-native-enable nil)
+  (setq python-shell-interpreter "ipython")
+  (with-eval-after-load "python"
+    (define-key python-mode-map (kbd "C-c C-d") 'helm-pydoc)))
+
+
+(add-hook 'python-mode-hook 'my-python-mode-hook)
+
+;; (use-package anaconda-mode
+;;   :ensure t
+;;   :commands anaconda-mode
+;;   :diminish anaconda-mode
+;;   :init
+;;   (progn
+;;     (add-hook 'python-mode-hook 'anaconda-mode)
+;;     ;; (setq python-shell-interpreter "ipython")
+;;     (setq python-shell-completion-native-enable nil)
+;;     ;;   (setq python-shell-interpreter "python"))
+;;     ;; (setenv "WORKON_HOME" "/Users/nessig/anaconda/envs")
+;;     ;; (pyvenv-mode 1)
+;;     ;; (add-hook 'python-mode-hook 'eldoc-mode)
+;;     ))
+
+;; (use-package company-anaconda
+;;   :ensure t
+;;   :init (add-to-list 'company-backends 'company-anaconda))
+
+;; (use-package elpy
+;;   :ensure t
+;;   :defer 2
+;;   :config
+;;   (progn
+;;     ;; Use Flycheck instead of Flymake
+;;     (when (require 'flycheck nil t)
+;;       (remove-hook 'elpy-modules 'elpy-module-flymake)
+;;       (remove-hook 'elpy-modules 'elpy-module-yasnippet)
+;;       (remove-hook 'elpy-mode-hook 'elpy-module-highlight-indentation)
+;;       (add-hook 'elpy-mode-hook 'flycheck-mode))
+;;     (elpy-enable)
+;;     ;; jedi is great
+;;     (setq elpy-rpc-backend "jedi")
+;;     ;; (setq python-shell-interpreter "ipython")
+;;     ;; (setq python-shell-completion-native-enable nil)
+;;     ;; '(elpy-interactive-python-command "ipython")
+;;     (elpy-use-ipython)
+;;     ;; (defadvice auto-complete-mode (around disable-auto-complete-for-python)
+;;     ;;   (unless (eq major-mode 'python-mode) ad-do-it))
+;;     ;; (ad-activate 'auto-complete-mode)
+;;     ))
+
+
+;;;;;;;;;;;;;   Web Stuff
+;; I'll eventually get around to migrating some of my old config back into here...
+
+(use-package emmet-mode
+  :ensure t
+  :commands (emmet-expand-line emmet-expand)
+  :defer 2
+  :init
+  (progn
+    (add-hook 'sgml-mode-hook 'emmet-mode)
+    ;; (add-hook 'web-mode-hook 'emmet-mode)
+    (add-hook 'css-mode-hook  'emmet-mode))
+  :config
+  (progn
+    (bind-key "C-j" 'emmet-expand-line emmet-mode-keymap)
+    (bind-key "<C-return>" 'emmet-expand emmet-mode-keymap)
+    (setq emmet-indentation 2)
+    ;; (defadvice emmet-preview-accept (after expand-and-fontify activate)
+    ;;   "Update the font-face after an emmet expantion."
+    ;;   (font-lock-fontify-buffer))
+    ))
+
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ;;;;;;;;;;;;;;  Minor Modes
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; (define-key global-map [remap find-file] 'helm-find-files)
+;; (define-key global-map [remap occur] 'helm-occur)
+;; (define-key global-map [remap list-buffers] 'helm-buffers-list)
+;; (define-key global-map [remap dabbrev-expand] 'helm-dabbrev)
+;; (global-set-key (kbd "M-x") 'helm-M-x)
+;; (unless (boundp 'completion-in-region-function)
+;;   (define-key lisp-interaction-mode-map [remap completion-at-point] 'helm-lisp-completion-at-point)
+;;   (define-key emacs-lisp-mode-map       [remap completion-at-point] 'helm-lisp-completion-at-point))
+
+;; - ‘find-file’(C-x C-f)            =>‘helm-find-files’
+;; - ‘occur’(M-s o)                  =>‘helm-occur’
+;; - ‘list-buffers’(C-x C-b)         =>‘helm-buffers-list’
+;; - ‘completion-at-point’(M-tab)    =>‘helm-lisp-completion-at-point’[1]
+;; - ‘dabbrev-expand’(M-/)           =>‘helm-dabbrev’
+
+;; - ‘execute-extended-command’(M-x) =>‘helm-M-x’
+
+(use-package helm
+  :diminish ""
+  :init
+  (progn
+    (require 'helm-config)
+    (setq helm-idle-delay 0.0 ; update fast sources immediately (doesn't).
+          helm-input-idle-delay 0.01)  ; this actually updates things
+    ;; (set-face-attribute 'helm-selection nil
+    ;;         :background "purple"
+    ;;         :foreground "black")
+    (helm-mode 1))
+  :bind (("M-x" . helm-M-x)
+	 ("C-x r b" . helm-filtered-bookmarks)
+	 ("C-x C-f" . helm-find-files)
+	 ("M-s o" . helm-occur)
+	 ;; ("M-tab" . helm-completion-in-region-fuzzy-match)
+	 ("M-/" . dabbrev-expand)
+	 ("C-x C-i" . helm-semantic-or-imenu)))
+
+(use-package rainbow-mode
+  :ensure t
+  :diminish ""
+  :init
+  ;; (add-hook 'web-mode-hook 'rainbow-mode)
+  (add-hook 'sgml-mode-hook  'rainbow-mode)
+  (add-hook 'css-mode-hook 'rainbow-mode))
+
+;; (use-package flycheck
+;;   :ensure t
+;;   :diminish ""
+;;   :init
+;;   (progn
+;;     (setq flycheck-indication-mode 'left-fringe)
+;;     ;; disable the annoying doc checker
+;;     (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+;;   :config
+;;   (global-flycheck-mode 1))
+
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ;;;;;;;;;;;;;;  Misc
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; Are we on a mac?
+(setq is-mac (equal system-type 'darwin))
+
+(when (display-graphic-p)
+  (if is-mac
+      (menu-bar-mode 1)))
+
+(when is-mac
+  ;; Change command to meta.
+  ;; (setq mac-command-modifier 'meta)
+  ;; (setq mac-option-modifier 'super)
+  ;; (setq ns-function-modifier 'hyper)
+  (use-package exec-path-from-shell
+    :ensure t
+    :config
+    (exec-path-from-shell-initialize)))
+
+
+
+;; (custom-set-variables
+;;  ;; custom-set-variables was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(package-selected-packages
+;;    (quote
+;;     (rainbow-mode zoom-frm zenburn-theme yaml-mode web-mode web-beautify w3m use-package tern-auto-complete sqlplus solarized-theme slime scala-mode restclient rainbow-delimiters php-mode nodejs-repl magit julia-mode js2-refactor js-comint jedi jdee helm haskell-mode go-mode flycheck exec-path-from-shell evil emacs-eclim elpy ein edit-server csv-mode company-irony-c-headers company-irony company-c-headers clang-format cider auto-complete-clang ac-js2 ac-emmet ac-clang))))
+;; (custom-set-faces
+;;  ;; custom-set-faces was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "cdbd0a803de328a4986659d799659939d13ec01da1f482d838b68038c1bb35e8" default)))
+ '(package-selected-packages
+   (quote
+    (company-jedi helm-company helm-pydoc pyenv-mode company-anaconda anaconda-mode eshell-prompt-extras flycheck-irony function-args zoom-frm zenburn-theme yaml-mode web-mode web-beautify w3m use-package tern-auto-complete sqlplus solarized-theme slime scala-mode restclient rainbow-mode rainbow-delimiters php-mode nodejs-repl magit julia-mode js2-refactor js-comint jedi jdee helm haskell-mode go-mode flycheck exec-path-from-shell evil emacs-eclim elpy ein edit-server csv-mode company-irony-c-headers company-irony company-c-headers clang-format cider auto-complete-clang ac-js2 ac-emmet ac-clang))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
