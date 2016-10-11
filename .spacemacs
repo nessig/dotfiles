@@ -25,8 +25,11 @@ values."
      ;; ----------------------------------------------------------------
      ;; auto-completion
      (auto-completion :variables
-                      auto-completion-enable-snippets-in-popup t
                       spacemacs--auto-completion-time 0.0)
+     ;; (auto-completion :variables
+     ;;                  auto-completion-enable-snippets-in-popup t
+     ;;                  spacemacs--auto-completion-time 0.0)
+
      ;; (auto-completion :variables
      ;;                  auto-completion-return-key-behavior 'complete
      ;;                  auto-completion-tab-key-behavior 'cycle
@@ -38,6 +41,11 @@ values."
      emacs-lisp
      ;; git
      markdown
+     html
+     javascript
+     yaml
+     chrome
+     ;; csv
      ;; org
      (shell :variables
             shell-default-height 30
@@ -50,6 +58,7 @@ values."
      (c-c++
       :variables
       c-c++-enable-clang-support t
+      c-c++-default-mode-for-headers 'c++-mode
       c-basic-offset 4
       )
      mineo-rtags
@@ -60,7 +69,6 @@ values."
      ;; semantic
      ;; gtags
      themes-megapack
-     spotify
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -266,6 +274,19 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+
+  (setq-default
+   evil-shift-width 2
+   tab-width 2
+   js-indent-level 2
+   js2-basic-offset 2
+   javascript-indent-level 2
+   css-indent-offset 2
+   web-mode-markup-indent-offset 2
+   web-mode-css-indent-offset 2
+   web-mode-code-indent-offset 2
+   web-mode-attr-indent-offset 2
+   )
   ;; Set escape keybinding to "jk"
   ;; (setq-default evil-escape-key-sequence "jk")
   ;; (helm-dash-docsets-path)
@@ -282,13 +303,26 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  ;; (setq edit-server-default-major-mode (javascript-mode))
 
   ;; (use-package expand-region
   ;;   :ensure t
   ;;   :bind ("C-=" . er/expand-region))
 
+  ;; (setq-default js2-basic-offset 2)
+  ;; (setq-default js-indent-level 2)
 
 
+  ;; (defun my-web-mode-hook ()
+  ;;   "Hooks for Web mode."
+
+  ;;   ;; (setq emmet-indent-after-insert nil)
+  ;;   ;; (setq emmet-indentation 2)
+  ;;   )
+  ;; (add-hook 'web-mode-hook  'my-web-mode-hook)
+
+  ;; (add-hook 'emmet-mode-hook (lambda () (setq emmet-indent-after-insert nil)))
+  ;; (add-hook 'emmet-mode-hook (lambda () (setq emmet-indentation 2))) ;; indent 2 spaces.
   ;; (use-package helm-dash
   ;;   :ensure t
   ;;   :config
@@ -304,9 +338,47 @@ you should place your code here."
   ;; (add-hook 'python-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
   ;; (global-set-key (kbd "C-c C-g") 'evil-escape)
 
-  (add-hook 'c-mode-common-hook 'clang-format-bindings)
-  (defun clang-format-bindings ()
-    (define-key c-mode-base-map [tab] 'clang-format-buffer))
+  ;; (add-hook 'c++-mode-hook 'clang-format-bindings)
+  ;; (defun clang-format-bindings ()
+  ;;   (define-key c++-mode-map (kbd "C-c b") 'clang-format-buffer))
+  (define-key c++-mode-map (kbd "C-c b") 'clang-format-buffer)
+  (define-key c-mode-map (kbd "C-c b") 'clang-format-buffer)
+  ;; (global-set-key (kbd "C-c b") 'clang-format-buffer)
+
+  ;; (add-hook 'c-mode-common-hook )
+  ;; (add-hook 'c++-mode-hook
+  ;;           (lambda ()
+  ;;             (define-key c++-format (kbd "C-c b") 'clang-format-buffer)))
+              ;; quick compilation
+              ;; (set (make-local-variable 'compile-command)
+              ;;      (concat "g++ -std=c++11 -Wall " buffer-file-name " && ./a.out"))
+              ;; ;; (push 'company-semantic company-backends)
+              ;; (setq company-clang-arguments '("-std=c++11"))
+              ;; (setq flycheck-clang-language-standard "c++11")
+              ;; ;; (setq flycheck-clang-include-path '())
+              ;; (add-to-list 'company-c-headers-path-system
+              ;;              "/Library/Developer/CommandLineTools/usr/include/c++/v1")
+              ;;   ))
+
+
+  ;; (with-eval-after-load 'c++
+  ;;   (spacemacs/set-leader-keys-for-major-mode 'c++-mode
+  ;;     "o=" 'clang-format-region))
+
+  ;; (add-hook 'c++-mode-hook
+  ;;           (lambda ()
+  ;;             ;; quick compilation
+  ;;             (set (make-local-variable 'compile-command)
+  ;;                  (concat "g++ -std=c++11 -Wall " buffer-file-name " && ./a.out"))
+  ;;             ;; (push 'company-semantic company-backends)
+  ;;             (setq company-clang-arguments '("-std=c++11"))
+  ;;             (setq flycheck-clang-language-standard "c++11")
+  ;;             ;; (setq flycheck-clang-include-path '())
+  ;;             (add-to-list 'company-c-headers-path-system
+  ;;                          "/Library/Developer/CommandLineTools/usr/include/c++/v1")
+  ;;               ))
+
+  ;; (add-hook 'c-mode-base-map 'clang-format-bindings)
 
   (defun copy-from-osx ()
     (shell-command-to-string "pbpaste"))
